@@ -3,9 +3,16 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
 
 export default defineConfig({
+  define: {
+    __DEV__: JSON.stringify(true),
+  },
   plugins: [react()],
   resolve: {
     alias: [
+      {
+        find: /^react-native-safe-area-context$/,
+        replacement: resolve(process.cwd(), 'src/web/safe-area-context.tsx'),
+      },
       {
         find: /^react-native$/,
         replacement: resolve(process.cwd(), 'node_modules/react-native-web'),
@@ -26,7 +33,6 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react-native-web', 'react-dom'],
-    exclude: ['react-native-safe-area-context'],
   },
   build: {
     outDir: 'web',
