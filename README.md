@@ -1,97 +1,110 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# LandCalc
 
-# Getting Started
+A simple land measurement calculator for calculating land area and converting between different units of measurement.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Features
 
-## Step 1: Start Metro
+- Calculate land area from measurements.
+- Convert between supported land measurement units.
+- Android app built with React Native.
+- Web version powered by React Native Web and Vite.
+- Simple, user-friendly interface.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Tech Stack
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- React Native
+- TypeScript
+- React Native Community CLI
+- React Native Web
+- Vite
 
-```sh
-# Using npm
-npm start
+## Getting Started
 
-# OR using Yarn
-yarn start
+### Prerequisites
+
+- Node.js and npm
+- JDK 17
+- Android Studio and Android SDK
+- Android emulator or a physical Android device
+
+### Installation
+
+Clone the repository and install dependencies:
+
+```bash
+git clone <repository-url>
+cd LandCalc
+npm install
 ```
 
-## Step 2: Build and run your app
+Replace `<repository-url>` with your GitHub repository URL.
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## Running the App
 
 ### Android
 
-```sh
-# Using npm
+Start an Android emulator or connect your Android device, then run:
+
+```bash
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
+### Web
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+Start the development server:
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```bash
+npm run web
 ```
 
-Then, and every time you update your native dependencies, run:
+Open the URL displayed in your terminal, usually `http://localhost:5173/`.
 
-```sh
-bundle exec pod install
+Build the production web version:
+
+```bash
+npm run web:build
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+The production build is generated in the `web/` directory.
 
-```sh
-# Using npm
-npm run ios
+## Building an Android APK
 
-# OR using Yarn
-yarn ios
+From the project root:
+
+```bash
+cd android
+./gradlew assembleDebug
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+The generated APK is located at:
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```text
+android/app/build/outputs/apk/debug/app-debug.apk
+```
 
-## Step 3: Modify your app
+## Project Structure
 
-Now that you have successfully run the app, let's make changes!
+```text
+LandCalc/
+├── android/       # Native Android project
+├── src/           # Application source files
+├── web/           # Generated web build
+├── App.tsx        # Main application component
+├── index.html     # Web entry HTML
+├── package.json   # Dependencies and scripts
+└── vite.config.ts # Vite configuration
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+The exact structure may change as development continues. The `web/` directory contains generated files and should not be edited manually.
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## Contributing
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+Suggestions, bug reports, and contributions are welcome. Feel free to open an issue or submit a pull request.
 
-## Congratulations! :tada:
+## Disclaimer
 
-You've successfully run and modified your React Native App. :partying_face:
+LandCalc is intended as a calculation aid. Verify measurements, regional unit definitions, and results before using them for official records or land transactions.
 
-### Now what?
+## License
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Add your chosen license here and include the corresponding `LICENSE` file in the repository.

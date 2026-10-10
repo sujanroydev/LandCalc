@@ -28,4 +28,7 @@ export default defineConfig({
     include: ['react-native-web', 'react-dom'],
     exclude: ['react-native-safe-area-context'],
   },
+  build: {
+    outDir: 'web',
+  },
 });
