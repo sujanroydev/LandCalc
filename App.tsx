@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  StatusBar,
   ScrollView,
   View,
   Text,
@@ -8,7 +9,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -249,182 +250,192 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.brand}>Land Calculator</Text>
-          <Text style={styles.subtitle}>Measure. Calculate. Estimate.</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.historyButton}
-          onPress={() => setShowHistory(!showHistory)}
-        >
-          <Text style={styles.historyButtonText}>
-            {showHistory ? 'Calculator' : 'History'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+    <SafeAreaProvider>
+      <StatusBar barStyle="light-content" />
 
-      {showHistory ? (
-        <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.heading}>Calculation History</Text>
-          {history.length === 0 ? (
-            <Text style={styles.empty}>No calculations saved yet.</Text>
-          ) : (
-            history.map(item => (
-              <View key={item.id} style={styles.card}>
-                <Text style={styles.historyDate}>{item.date}</Text>
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.brand}>Land Calculator</Text>
+            <Text style={styles.subtitle}>Measure. Calculate. Estimate.</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.historyButton}
+            onPress={() => setShowHistory(!showHistory)}
+          >
+            <Text style={styles.historyButtonText}>
+              {showHistory ? 'Calculator' : 'History'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {showHistory ? (
+          <ScrollView contentContainerStyle={styles.content}>
+            <Text style={styles.heading}>Calculation History</Text>
+            {history.length === 0 ? (
+              <Text style={styles.empty}>No calculations saved yet.</Text>
+            ) : (
+              history.map(item => (
+                <View key={item.id} style={styles.card}>
+                  <Text style={styles.historyDate}>{item.date}</Text>
+                  <ResultRow
+                    label="Area"
+                    value={`${fmt(item.area)} ${item.unit}`}
+                  />
+                  <ResultRow
+                    label="Total area"
+                    value={`${fmt(item.totalArea)} ${item.unit}`}
+                  />
+                  <ResultRow label="Quantity" value={String(item.quantity)} />
+                  <ResultRow label="Total price" value={currency(item.price)} />
+                  <TouchableOpacity
+                    style={styles.secondaryButton}
+                    onPress={() => {
+                      setResult(item);
+                      setShowHistory(false);
+                    }}
+                  >
+                    <Text style={styles.secondaryText}>View result</Text>
+                  </TouchableOpacity>
+                </View>
+              ))
+            )}
+            {history.length > 0 && (
+              <TouchableOpacity
+                style={styles.clearHistory}
+                onPress={clearHistory}
+              >
+                <Text style={styles.clearText}>Clear history</Text>
+              </TouchableOpacity>
+            )}
+          </ScrollView>
+        ) : (
+          <ScrollView contentContainerStyle={styles.content}>
+            <View style={styles.card}>
+              <Text style={styles.heading}>Dimensions</Text>
+              <Text style={styles.help}>
+                Add two length measurements and two breadth measurements.
+              </Text>
+
+              <View style={styles.twoColumns}>
+                <View style={styles.column}>
+                  <Field label="Length 1" value={l1} onChangeText={setL1} />
+                  <Select
+                    label="Unit"
+                    value={lu1}
+                    options={LENGTH_UNITS}
+                    onChange={setLu1}
+                  />
+                </View>
+                <View style={styles.column}>
+                  <Field label="Length 2" value={l2} onChangeText={setL2} />
+                  <Select
+                    label="Unit"
+                    value={lu2}
+                    options={LENGTH_UNITS}
+                    onChange={setLu2}
+                  />
+                </View>
+                <View style={styles.column}>
+                  <Field label="Breadth 1" value={b1} onChangeText={setB1} />
+                  <Select
+                    label="Unit"
+                    value={bu1}
+                    options={LENGTH_UNITS}
+                    onChange={setBu1}
+                  />
+                </View>
+                <View style={styles.column}>
+                  <Field label="Breadth 2" value={b2} onChangeText={setB2} />
+                  <Select
+                    label="Unit"
+                    value={bu2}
+                    options={LENGTH_UNITS}
+                    onChange={setBu2}
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.card}>
+              <Text style={styles.heading}>Area & Pricing</Text>
+
+              <Field
+                label="Number of plots / quantity"
+                value={quantity}
+                onChangeText={setQuantity}
+              />
+              <Select
+                label="Display area in"
+                value={areaUnit}
+                options={AREA_UNITS}
+                onChange={setAreaUnit}
+              />
+              <Field
+                label="Rate per selected area unit (₹)"
+                value={rate}
+                onChangeText={setRate}
+              />
+              <Select
+                label="Rate unit"
+                value={rateUnit}
+                options={AREA_UNITS}
+                onChange={setRateUnit}
+              />
+
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={calculate}
+              >
+                <Text style={styles.primaryText}>Calculate</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.secondaryButton}
+                onPress={clearInputs}
+              >
+                <Text style={styles.secondaryText}>Clear inputs</Text>
+              </TouchableOpacity>
+            </View>
+
+            {result && (
+              <View style={styles.resultCard}>
+                <Text style={styles.resultHeading}>Calculation Result</Text>
+                <Text style={styles.bigNumber}>{fmt(result.totalArea)}</Text>
+                <Text style={styles.unitText}>{result.unit} total area</Text>
+                <View style={styles.separator} />
+                <ResultRow label="Length" value={`${fmt(result.length)} m`} />
+                <ResultRow label="Breadth" value={`${fmt(result.breadth)} m`} />
                 <ResultRow
-                  label="Area"
-                  value={`${fmt(item.area)} ${item.unit}`}
+                  label="Single plot area"
+                  value={`${fmt(result.area)} ${result.unit}`}
                 />
+                <ResultRow label="Quantity" value={String(result.quantity)} />
                 <ResultRow
                   label="Total area"
-                  value={`${fmt(item.totalArea)} ${item.unit}`}
+                  value={`${fmt(result.totalArea)} ${result.unit}`}
                 />
-                <ResultRow label="Quantity" value={String(item.quantity)} />
-                <ResultRow label="Total price" value={currency(item.price)} />
-                <TouchableOpacity
-                  style={styles.secondaryButton}
-                  onPress={() => {
-                    setResult(item);
-                    setShowHistory(false);
-                  }}
-                >
-                  <Text style={styles.secondaryText}>View result</Text>
-                </TouchableOpacity>
+                <ResultRow
+                  label="Estimated price"
+                  value={currency(result.price)}
+                />
               </View>
-            ))
-          )}
-          {history.length > 0 && (
-            <TouchableOpacity
-              style={styles.clearHistory}
-              onPress={clearHistory}
-            >
-              <Text style={styles.clearText}>Clear history</Text>
-            </TouchableOpacity>
-          )}
-        </ScrollView>
-      ) : (
-        <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.card}>
-            <Text style={styles.heading}>Dimensions</Text>
-            <Text style={styles.help}>
-              Add two length measurements and two breadth measurements.
+            )}
+
+            <Text style={styles.footer}>
+              Land Calculator · Calculations are stored on this device.
             </Text>
-
-            <View style={styles.twoColumns}>
-              <View style={styles.column}>
-                <Field label="Length 1" value={l1} onChangeText={setL1} />
-                <Select
-                  label="Unit"
-                  value={lu1}
-                  options={LENGTH_UNITS}
-                  onChange={setLu1}
-                />
-              </View>
-              <View style={styles.column}>
-                <Field label="Length 2" value={l2} onChangeText={setL2} />
-                <Select
-                  label="Unit"
-                  value={lu2}
-                  options={LENGTH_UNITS}
-                  onChange={setLu2}
-                />
-              </View>
-              <View style={styles.column}>
-                <Field label="Breadth 1" value={b1} onChangeText={setB1} />
-                <Select
-                  label="Unit"
-                  value={bu1}
-                  options={LENGTH_UNITS}
-                  onChange={setBu1}
-                />
-              </View>
-              <View style={styles.column}>
-                <Field label="Breadth 2" value={b2} onChangeText={setB2} />
-                <Select
-                  label="Unit"
-                  value={bu2}
-                  options={LENGTH_UNITS}
-                  onChange={setBu2}
-                />
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.card}>
-            <Text style={styles.heading}>Area & Pricing</Text>
-
-            <Field
-              label="Number of plots / quantity"
-              value={quantity}
-              onChangeText={setQuantity}
-            />
-            <Select
-              label="Display area in"
-              value={areaUnit}
-              options={AREA_UNITS}
-              onChange={setAreaUnit}
-            />
-            <Field
-              label="Rate per selected area unit (₹)"
-              value={rate}
-              onChangeText={setRate}
-            />
-            <Select
-              label="Rate unit"
-              value={rateUnit}
-              options={AREA_UNITS}
-              onChange={setRateUnit}
-            />
-
-            <TouchableOpacity style={styles.primaryButton} onPress={calculate}>
-              <Text style={styles.primaryText}>Calculate</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={clearInputs}
-            >
-              <Text style={styles.secondaryText}>Clear inputs</Text>
-            </TouchableOpacity>
-          </View>
-
-          {result && (
-            <View style={styles.resultCard}>
-              <Text style={styles.resultHeading}>Calculation Result</Text>
-              <Text style={styles.bigNumber}>{fmt(result.totalArea)}</Text>
-              <Text style={styles.unitText}>{result.unit} total area</Text>
-              <View style={styles.separator} />
-              <ResultRow label="Length" value={`${fmt(result.length)} m`} />
-              <ResultRow label="Breadth" value={`${fmt(result.breadth)} m`} />
-              <ResultRow
-                label="Single plot area"
-                value={`${fmt(result.area)} ${result.unit}`}
-              />
-              <ResultRow label="Quantity" value={String(result.quantity)} />
-              <ResultRow
-                label="Total area"
-                value={`${fmt(result.totalArea)} ${result.unit}`}
-              />
-              <ResultRow
-                label="Estimated price"
-                value={currency(result.price)}
-              />
-            </View>
-          )}
-
-          <Text style={styles.footer}>
-            Land Calculator · Calculations are stored on this device.
-          </Text>
-        </ScrollView>
-      )}
-    </SafeAreaView>
+          </ScrollView>
+        )}
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F1F5F9' },
+  safe: {
+    flex: 1,
+    backgroundColor: '#4338CA',
+  },
   header: {
     backgroundColor: '#4338CA',
     paddingHorizontal: 20,
